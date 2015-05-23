@@ -1,0 +1,9 @@
+p.text {
+  margin: 0;
+  font-size: 10px;
+  font-family: Helvetica Neue;
+}
+
+.square {
+	fill: black;
+}
