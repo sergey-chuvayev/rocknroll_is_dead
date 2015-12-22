@@ -3,6 +3,7 @@ var inject = require('gulp-inject');
 var sass = require('gulp-sass');
 var concat = require('gulp-concat');
 var clean = require('gulp-clean');
+var uglify = require('gulp-uglify');
 var browserSync = require('browser-sync');
 
 
@@ -28,8 +29,9 @@ gulp.task('css', function(){
 });
 
 gulp.task('js', function(){
-    return gulp.src(['./src/js/libs/*.js', './src/js/*.js'])
-        .pipe(concat('script.js'))
+    return gulp.src(['./src/js/**/*.js'])
+        // .pipe(concat('script.js'))
+        // .pipe(uglify())
         .pipe(gulp.dest('./public/js/'))
         .pipe(browserSync.reload({ stream: true }));
 });

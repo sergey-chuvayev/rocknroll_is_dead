@@ -1,82 +1,93 @@
 var width = $('body').width();
 var height = 400;
 
-var dataLength = data.length;
+d3.json('/js/data.json', function(resp){
+	main(resp);
+});
 
-var svg = d3.select('body')
-			.append('svg')
-			.attr('width', width)
-			.attr('height', height);
+function main(data){
 
-var xScale = d3.scale.linear()
-					.domain([d3.min(data, function(d){
-						return d.death_year
-					}), d3.max(data, function(d){
-						return d.death_year
-					})])
-					.range([0, width]);
+	var dataLength = data.length;
 
-var yScale = d3.scale.linear()
-					.domain([d3.min(data, function(d){
-						return d.age
-					}), d3.max(data, function(d){
-						return d.age
-					})])
-					.range([0, height]);
+	console.log(data)
 
-var xAxis = function() {
-			return d3.svg.axis()
-			.scale(xScale)
-			.ticks(5)
-			.innerTickSize(-height)
-			.outerTickSize(0)
-			.tickFormat("");
-		};
+	var svg = d3.select('svg')
+				.attr('width', width)
+				.attr('height', height);
 
-var yAxis = function() {
-			return d3.svg.axis()
-			.scale(yScale)
-			.ticks(5)
-			.orient("left")
-			.innerTickSize(-width)
-			.outerTickSize(0)
-			.tickFormat("");
-		};
+	var xScale = d3.scale.linear()
+						.domain([d3.min(data, function(d){
+							return d.death_year
+						}), d3.max(data, function(d){
+							return d.death_year
+						})])
+						.range([0, width]);
 
-svg.append("svg:g")
-			.attr("class", "grid")
-			.attr("transform", "translate(10,10)")
-			.call(xAxis().ticks(10));
+	var yScale = d3.scale.linear()
+						.domain([d3.min(data, function(d){
+							return d.age
+						}), d3.max(data, function(d){
+							return d.age
+						})])
+						.range([0, height]);
 
-svg.append("svg:g")
-			.attr("class", "x axis")
-			.attr("transform", "translate(10,10)")
-			.call(xAxis());
+	var xAxis = function() {
+				return d3.svg.axis()
+				.scale(xScale)
+				.ticks(5)
+				.innerTickSize(-height)
+				.outerTickSize(0)
+				.tickFormat("");
+			};
 
-svg.selectAll('rect')
-	.data(data)
-	.enter()
-	.append('rect')
-	.classed('bar',true)
-	.attr('width',10)
-	.attr('height',function(d){
-		return yScale(d.age)
-	})
-	.attr('x',function(d){
-		return xScale(d.death_year)
-	});
+	var yAxis = function() {
+				return d3.svg.axis()
+				.scale(yScale)
+				.ticks(5)
+				.orient("left")
+				.innerTickSize(-width)
+				.outerTickSize(0)
+				.tickFormat("");
+			};
 
-svg.selectAll('text')
-	.data(data)
-	.enter()
-	.append('text')
-	.attr('x',function(d){
-		return xScale(d.death_year)
-	})
-	.attr('y',function(d){
-		return yScale(d.age) + 10
-	})
-	.classed('name-text',true)
-	.text(function(d){
-		return d.name + " " + d.age
-	});
+	svg.append("svg:g")
+				.attr("class", "grid")
+				.attr("transform", "translate(10,10)")
+				.call(xAxis().ticks(10));
+
+	svg.append("svg:g")
+				.attr("class", "x axis")
+				.attr("transform", "translate(10,10)")
+				.call(xAxis());
+
+	// svg.selectAll('rect')
+	// 	.data(data)
+	// 	.enter()
+	// 	.append('rect')
+	// 	.classed('bar',true)
+	// 	.attr('width',10)
+	// 	.attr('height',function(d){
+	// 		return yScale(parseInt(d.age))
+	// 	})
+	// 	.attr('x',function(d){
+	// 		console.log(d)
+	// 		return xScale(d.date)
+	// 	});
+
+	// svg.selectAll('text')
+	// 	.data(data)
+	// 	.enter()
+	// 	.append('text')
+	// 	.attr('x',function(d){
+	// 		return xScale(d.death_year)
+	// 	})
+	// 	.attr('y',function(d){
+	// 		return yScale(d.age) + 10
+	// 	})
+	// 	.classed('name-text',true)
+	// 	.text(function(d){
+	// 		return d.name + " " + d.age
+	// 	});
+
+}
+
