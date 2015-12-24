@@ -1,4 +1,4 @@
-var width = $('body').width();
+var width = 1000;
 var height = 400;
 
 d3.json('/js/data.json', function(resp){
@@ -9,85 +9,83 @@ function main(data){
 
 	var dataLength = data.length;
 
-	console.log(data)
-
 	var svg = d3.select('svg')
-				.attr('width', width)
-				.attr('height', height);
+		.attr('width', width)
+		.attr('height', height);
 
-	var xScale = d3.scale.linear()
-						.domain([d3.min(data, function(d){
-							return d.death_year
-						}), d3.max(data, function(d){
-							return d.death_year
-						})])
-						.range([0, width]);
+	var xScale = d3.time.scale()
+		.domain([d3.min(data, function(d){
+			return new Date(d.death_date)
+		}), d3.max(data, function(d){
+			return new Date(d.death_date)
+		})])
+		.range([0, width]);
+
 
 	var yScale = d3.scale.linear()
-						.domain([d3.min(data, function(d){
-							return d.age
-						}), d3.max(data, function(d){
-							return d.age
-						})])
-						.range([0, height]);
+		.domain([d3.min(data, function(d){
+			return d.age
+		}), d3.max(data, function(d){
+			return d.age
+		})])
+		.range([0, height]);
 
-	var xAxis = function() {
-				return d3.svg.axis()
-				.scale(xScale)
-				.ticks(5)
-				.innerTickSize(-height)
-				.outerTickSize(0)
-				.tickFormat("");
-			};
 
-	var yAxis = function() {
-				return d3.svg.axis()
-				.scale(yScale)
-				.ticks(5)
-				.orient("left")
-				.innerTickSize(-width)
-				.outerTickSize(0)
-				.tickFormat("");
-			};
+	var xAxis = d3.svg.axis()
+		.scale(xScale)
+		.orient('top')
+		.ticks(d3.time.years, 3)
+		// .tickFormat(d3.time.format('%yyyy'))
+		// .tickSize(5)
+		// .tickPadding(8);
 
-	svg.append("svg:g")
-				.attr("class", "grid")
-				.attr("transform", "translate(10,10)")
-				.call(xAxis().ticks(10));
+	var yAxis = d3.svg.axis()
+		.scale(yScale)
+		.orient('right')
+		.tickPadding(8);
 
-	svg.append("svg:g")
-				.attr("class", "x axis")
-				.attr("transform", "translate(10,10)")
-				.call(xAxis());
 
-	// svg.selectAll('rect')
-	// 	.data(data)
-	// 	.enter()
-	// 	.append('rect')
-	// 	.classed('bar',true)
-	// 	.attr('width',10)
-	// 	.attr('height',function(d){
-	// 		return yScale(parseInt(d.age))
-	// 	})
-	// 	.attr('x',function(d){
-	// 		console.log(d)
-	// 		return xScale(d.date)
-	// 	});
+	svg.append('g')
+		.attr('class', 'x axis')
+		.attr('transform', 'translate(0, ' + height + ')')
+		.call(xAxis);
 
-	// svg.selectAll('text')
-	// 	.data(data)
-	// 	.enter()
-	// 	.append('text')
-	// 	.attr('x',function(d){
-	// 		return xScale(d.death_year)
-	// 	})
-	// 	.attr('y',function(d){
-	// 		return yScale(d.age) + 10
-	// 	})
-	// 	.classed('name-text',true)
-	// 	.text(function(d){
-	// 		return d.name + " " + d.age
-	// 	});
+	svg.append('g')
+		.attr('class', 'y axis')
+		.call(yAxis);
+
+
+	var gPoints = svg.selectAll('svg')
+		.data(data)
+		.enter()
+		.append('g').attr('class','point-g');
+
+	gPoints.append('circle')
+		.attr('r',5)
+		.attr('class', 'point')
+		.attr('cx', function(d){
+			return xScale(new Date(d.death_date));
+		})
+		.attr('cy', function(d){
+			return yScale(d.age);
+		})
+		.on('mouseover', function(){
+			$(this).next().show();
+		})
+		.on('mouseout', function(){
+			$(this).next().hide();
+		});
+
+	gPoints.append('text').attr('class','circle-text')
+		.text(function(d){
+			return d.name
+		})
+		.attr('x', function(d){
+			return xScale(new Date(d.death_date)) + 10;
+		})
+		.attr('y', function(d){
+			return yScale(d.age);
+		});
 
 }
 
